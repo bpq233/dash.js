@@ -35,7 +35,7 @@ angular.module('DashIFTestVectorsService', ['ngResource']).factory('dashifTestVe
 
 app.controller('DashController', ['$scope', '$window', 'sources', 'contributors', 'dashifTestVectors', function ($scope, $window, sources, contributors, dashifTestVectors) {
     $scope.selectedItem = {
-        url: 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd'
+        url: 'https://test1.bpqiang.cloud/video/video.mpd'
     };
 
     sources.query(function (data) {
@@ -859,6 +859,7 @@ app.controller('DashController', ['$scope', '$window', 'sources', 'contributors'
     };
 
     $scope.doLoad = function () {
+        console.log('sdfsa');
         $scope.initSession();
 
         // Execute if the loaded video already has preset DRM data

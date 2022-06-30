@@ -141,6 +141,7 @@ function ScheduleController(config) {
                     qualityChange = abrController.checkPlaybackQuality(type, streamInfo.id);
                 }
                 if (!qualityChange) {
+
                     _getNextFragment();
                 }
 

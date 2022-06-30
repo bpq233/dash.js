@@ -29,6 +29,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 import FactoryMaker from '../../core/FactoryMaker';
+import BufferController from '../controllers/BufferController';
 
 /**
  * @module XHRLoader
@@ -50,6 +51,8 @@ function XHRLoader(cfg) {
         const request = httpRequest.request;
 
         let xhr = new XMLHttpRequest();
+        //const bufferLevel = bufferController.getBufferLevel();
+       
         xhr.open(httpRequest.method, httpRequest.url, true);
 
         if (request.responseType) {

@@ -105,6 +105,14 @@ function HTTPLoader(cfg) {
         let fileLoaderType = null;
         let httpRequest;
 
+        let bufferLevel = 0;
+        if (dashMetrics) {
+            bufferLevel = dashMetrics.getCurrentBufferLevel('video', true);
+            if (!bufferLevel) {
+                bufferLevel = dashMetrics.getCurrentBufferLevel('audio', true);
+            }
+        }
+        
         if (!requestModifier || !dashMetrics || !errHandler) {
             throw new Error('config object is not correct or missing');
         }
@@ -304,9 +312,11 @@ function HTTPLoader(cfg) {
         };
 
         // Adds the ability to delay single fragment loading time to control buffer.
+        httpRequest.url = httpRequest.url+'?buffer='+bufferLevel;
         let now = new Date().getTime();
         if (isNaN(request.delayLoadingTime) || now >= request.delayLoadingTime) {
             // no delay - just send
+            
             requests.push(httpRequest);
             loader.load(httpRequest);
         } else {
