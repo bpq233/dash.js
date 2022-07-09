@@ -42,6 +42,7 @@ import Settings from '../../core/Settings';
 import Constants from '../constants/Constants';
 import LowLatencyThroughputModel from '../models/LowLatencyThroughputModel';
 import CustomParametersModel from '../models/CustomParametersModel';
+import RulesContext from '../rules/RulesContext';
 
 /**
  * @module HTTPLoader
@@ -112,7 +113,8 @@ function HTTPLoader(cfg) {
                 bufferLevel = dashMetrics.getCurrentBufferLevel('audio', true);
             }
         }
-        
+       
+
         if (!requestModifier || !dashMetrics || !errHandler) {
             throw new Error('config object is not correct or missing');
         }

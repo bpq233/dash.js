@@ -205,6 +205,52 @@ function ABRRulesCollection(config) {
         const activeRules = _getRulesWithChange(switchRequestArray);
         const maxQuality = getMinSwitchRequest(activeRules);
 
+
+        let bufferLevel = 0;
+        let mediaType = rulesContext.getMediaInfo().type;
+        bufferLevel = dashMetrics.getCurrentBufferLevel(mediaType, true);
+    
+        let requests = dashMetrics.getHttpRequests(mediaType);
+		let lastRequest = null;
+		let currentRequest = null;
+		
+		if(requests) {
+			// 获取上一个有效的HTTP请求
+            let i = requests.length - 1; 
+            while(i >=0 && lastRequest === null) {
+                currentRequest = requests[i];
+                if (currentRequest._tfinish && currentRequest.trequest && currentRequest.tresponse && currentRequest.trace && currentRequest.trace.length > 0) {
+                    lastRequest = requests[i];
+                }
+                i--;
+            }
+            if(lastRequest !== null && lastRequest.type === 'MediaSegment') {
+                console.log(lastRequest);
+                // 视频块传输时间
+                // trequest:客户端发送HTTP请求的时间点
+                // tresponse:客户端接收到HTTP相应的第一个字节的时间点
+                // _tfinish：客户端接受完HTTP相应的最后一个字节的时间点，既请求完成时间。
+                
+                let transmissionTime = (lastRequest._tfinish.getTime() - lastRequest.trequest.getTime()) / 1000;  // 单位为s 
+                
+                // 有了传输数据量（视频块大小）和传输时间，视频块吞吐量（单位为bps）则由视频块传输时间计算得到:
+                let chunkSzie = lastRequest.trace.reduce(function (a, b) {
+                    return a + b.b[0];
+                }, 0);
+                let throughput = chunkSzie / transmissionTime;
+                throughput = throughput / 1024;
+                console.log('视频块大小为:' +chunkSzie / 1024+'KB');
+                console.log(throughput+'KBps');
+                // 获取上一个视频块的码率级别
+                let lastQuality = rulesContext.getRepresentationInfo().quality;
+                console.log('获取码率级别'+lastQuality);
+                // 获取上一个视频块的时长 
+                let chunkDuration = rulesContext.getRepresentationInfo().fragmentDuration;
+                console.log('上一个视频块时长'+chunkDuration);
+            }
+        }
+
+
         return maxQuality || SwitchRequest(context).create();
     }
 
