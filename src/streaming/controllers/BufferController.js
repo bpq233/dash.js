@@ -915,7 +915,7 @@ function BufferController(config) {
     }
 
     function getBufferLevel() {
-        console.log(bufferLevel);
+        //console.log(bufferLevel);
         return bufferLevel;
     }
 

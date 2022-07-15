@@ -166,7 +166,7 @@ function Debug(config) {
 
         // log to console if the log level is high enough
         if (logFn[level] && settings.get().debug.logLevel >= level) {
-            logFn[level](message);
+            //logFn[level](message);
         }
 
         // send log event regardless of log level

@@ -182,7 +182,7 @@ function DashHandler(config) {
         request.representationId = representation.id;
    
         if (_setRequestUrl(request, url, representation)) {
-            console.log(request.url)
+            //console.log(request.url)
             return request;
         }
     }

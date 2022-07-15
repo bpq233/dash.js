@@ -794,7 +794,7 @@
     <div class="row">
         <div class="dash-video-player col-md-9">
             <div id="videoContainer" class="videoContainer">
-                <video></video>
+                <video id ="getDuration"></video>
                 <div id="video-caption"></div>
                 <div id="cast-msg" ng-if="isCasting">
                     {{ castPlayerState === 'IDLE' ? 'Ready to cast stream' : castPlayerState }}
@@ -1130,4 +1130,19 @@
     </div>
 </div>
 </body>
+
+<script type="text/javascript">
+    let start, end;
+    let video = document.getElementById('getDuration');
+    video.addEventListener("timeupdate",function(){
+        let timeDisplay;
+        timeDisplay = Math.floor(video.currentTime);
+        if (timeDisplay == 0) {
+            start = new Date();
+        } else if (timeDisplay == 349) {
+            end = new Date();
+            console.log(end.getTime() - start.getTime());
+        }
+    },false);
+</script>
 </html>

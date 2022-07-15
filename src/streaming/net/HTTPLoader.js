@@ -109,9 +109,6 @@ function HTTPLoader(cfg) {
         let bufferLevel = 0;
         if (dashMetrics) {
             bufferLevel = dashMetrics.getCurrentBufferLevel('video', true);
-            if (!bufferLevel) {
-                bufferLevel = dashMetrics.getCurrentBufferLevel('audio', true);
-            }
         }
        
 
@@ -314,7 +311,9 @@ function HTTPLoader(cfg) {
         };
 
         // Adds the ability to delay single fragment loading time to control buffer.
-        httpRequest.url = httpRequest.url+'?buffer='+bufferLevel;
+        if (bufferLevel && httpRequest.request.mediaType == 'video') {
+            httpRequest.url = httpRequest.url+'?buffer='+bufferLevel;
+        }      
         let now = new Date().getTime();
         if (isNaN(request.delayLoadingTime) || now >= request.delayLoadingTime) {
             // no delay - just send
