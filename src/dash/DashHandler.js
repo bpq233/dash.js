@@ -140,7 +140,6 @@ function DashHandler(config) {
         request.quality = representation.index;
         request.mediaInfo = mediaInfo;
         request.representationId = representation.id;
-        console.log(request);
 
         if (_setRequestUrl(request, representation.initialization, representation)) {
             request.url = replaceTokenForTemplate(request.url, 'Bandwidth', representation.bandwidth);

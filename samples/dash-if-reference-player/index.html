@@ -1139,7 +1139,7 @@
         timeDisplay = Math.floor(video.currentTime);
         if (timeDisplay == 0) {
             start = new Date();
-        } else if (timeDisplay == 349) {
+        } else if (timeDisplay > 633) {
             end = new Date();
             console.log(end.getTime() - start.getTime());
         }

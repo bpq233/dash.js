@@ -200,6 +200,8 @@ function ABRRulesCollection(config) {
         return SwitchRequest(context).create(quality, reason);
     }
 
+    let arr = [], sum = 0, pre = -1, change = 0;
+
     function getMaxQuality(rulesContext) {
         const switchRequestArray = qualitySwitchRules.map(rule => rule.getMaxIndex(rulesContext));
         const activeRules = _getRulesWithChange(switchRequestArray);
@@ -247,8 +249,44 @@ function ABRRulesCollection(config) {
                 // 获取上一个视频块的时长 
                 let chunkDuration = rulesContext.getRepresentationInfo().fragmentDuration;
                 //console.log('上一个视频块时长'+chunkDuration);
-
-                console.log(bufferLevel+','+chunkSzie+','+throughput+','+lastQuality+','+chunkDuration);
+                if (lastRequest._stream == 'video') {
+                    let url = lastRequest.url;
+                    let c = 0;
+                    for (let i = url.length - 7; ;i = i + 1) {
+                        if (url[i] == '.') {
+                            break;
+                        }
+                        
+                        if (!isNaN(url[i])) {
+                            c = c * 10 + parseInt(url[i]);
+                        }
+                    }
+                    arr[c] = parseInt(lastQuality);
+                    if (c >= 158) {
+                        let s = '';
+                        sum = 0;
+                        change = 0;
+                        for (let i = 1; i<arr.length; i++) {
+                            sum += arr[i];
+                            s += arr[i];
+                            s += ',';
+                            if (i > 1 && arr[i] < arr[i - 1]) {
+                                change++;
+                            }
+                        }
+                        console.log(s);
+                        console.log(sum / (arr.length - 1) + ',' + change);
+                    }
+                    console.log(bufferLevel+','+chunkSzie+','+throughput+','+lastQuality+','+chunkDuration);
+                    // if (lastQuality < pre) {
+                    //     change = change + 1;
+                    // }  
+                    //pre = lastQuality;
+                    // sum = sum + lastQuality;
+                    // cnt = cnt + 1;
+                    // console.log(sum / cnt + "," + change + ','+cnt);
+                }
+                
             }
         }
 
