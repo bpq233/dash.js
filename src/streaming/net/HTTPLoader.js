@@ -347,6 +347,15 @@ function HTTPLoader(cfg) {
             headers: headers
         };
 
+        let bufferLevel = 0;
+        if (dashMetrics) {
+            bufferLevel = dashMetrics.getCurrentBufferLevel('video', true);
+        }
+        if (bufferLevel && httpRequest.request.mediaType == 'video') {
+            httpRequest.url = httpRequest.url+'?buffer='+bufferLevel;
+        }   
+        // console.log(httpRequest.url)
+
         // Adds the ability to delay single fragment loading time to control buffer.
         let now = new Date().getTime();
         if (isNaN(request.delayLoadingTime) || now >= request.delayLoadingTime) {
