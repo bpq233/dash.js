@@ -354,7 +354,7 @@ function HTTPLoader(cfg) {
         if (bufferLevel && httpRequest.request.mediaType == 'video') {
             httpRequest.url = httpRequest.url+'?buffer='+bufferLevel;
         }   
-        // console.log(httpRequest.url)
+        console.log(httpRequest)
 
         // Adds the ability to delay single fragment loading time to control buffer.
         let now = new Date().getTime();

@@ -87,6 +87,9 @@ function BufferController(config) {
         replacingBuffer,
         seekTarget;
 
+    let start_rebuffer = -1;
+    let rebuffer_time = 0;
+
 
     function setup() {
         logger = Debug(context).getInstance().getLogger(instance);
@@ -867,9 +870,18 @@ function BufferController(config) {
         // So, when in low latency mode, change dash.js behavior so it notifies a stall just when
         // buffer reach 0 seconds
         if (((!playbackController.getLowLatencyModeEnabled() && bufferLevel < settings.get().streaming.buffer.stallThreshold) || bufferLevel === 0) && !isBufferingCompleted) {
+            if (start_rebuffer == -1 ) {
+                start_rebuffer = Date.now();
+            }
             _notifyBufferStateChanged(MetricsConstants.BUFFER_EMPTY);
         } else {
             if (isBufferingCompleted || bufferLevel >= settings.get().streaming.buffer.stallThreshold || (playbackController.getLowLatencyModeEnabled() && bufferLevel > 0)) {
+                var curr_rebuffer_time = 0;
+                if (start_rebuffer != -1 ) {
+                    curr_rebuffer_time = Date.now() - start_rebuffer;
+                    start_rebuffer = -1;
+                }
+                rebuffer_time += curr_rebuffer_time;
                 _notifyBufferStateChanged(MetricsConstants.BUFFER_LOADED);
             }
         }
@@ -1104,6 +1116,10 @@ function BufferController(config) {
         return sourceBufferSink;
     }
 
+    function getRebufferTime() {
+        return rebuffer_time;
+    }
+
     function getBufferLevel() {
         return bufferLevel;
     }
@@ -1261,6 +1277,7 @@ function BufferController(config) {
         setIsBufferingCompleted,
         getIsPruningInProgress,
         reset,
+        getRebufferTime,
         prepareForPlaybackSeek,
         prepareForReplacementTrackSwitch,
         prepareForNonReplacementTrackSwitch,

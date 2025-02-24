@@ -162,11 +162,56 @@ function ScheduleController(config) {
         }
     }
 
+    let arr = [];
+    let log_send = false;
+    let bps = [254, 507, 759, 1013, 1254, 1883, 3134, 4952, 9914, 14931]
+
     /**
      * Triggers the events to start requesting an init or a media segment. This will be picked up by the corresponding StreamProcessor.
      * @private
      */
     function _getNextFragment() {
+        let request = dashMetrics.getCurrentHttpRequest('video', true);     
+        if(request) {
+            let Quality = request._quality;
+            let _url = request.url;
+            let c = 0;
+            for (let i = _url.length - 7; ;i = i + 1) {
+                if (_url[i] == '.') {
+                    break;
+                }
+                if (!isNaN(_url[i])) {
+                    c = c * 10 + parseInt(_url[i]);
+                }
+            }
+            if (c >= 0) {
+                arr[c] = parseInt(Quality); 
+            }
+
+            // if (arr.length > 1) {
+            //     console.log(arr + " " + bufferController.getRebufferTime());
+            // }
+            
+            if (arr.length == 150 && !log_send) {
+                let avg = 0, cnt = 0;
+                for (var i = 0; i < arr.length; i++) {
+                    if (!isNaN(arr[i])) {
+                        avg = avg + bps[arr[i]];
+                        cnt = cnt + 1;
+                    }
+                }
+                avg = avg / cnt;
+                // console.log(bufferController.getRebufferTime() + " " + arr);
+                // console.log(arr);
+                log_send = true;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://localhost:8333', true);
+                var data = {'RebufferTime': bufferController.getRebufferTime(), 'Quality': arr, 'Avg': avg};
+                xhr.send(JSON.stringify(data));
+            }
+            
+        }
+        
         const currentRepresentationInfo = representationController.getCurrentRepresentationInfo();
 
         // A quality changed occured or we are switching the AdaptationSet. In that case we need to load a new init segment
